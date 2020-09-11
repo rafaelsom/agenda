@@ -1,0 +1,11 @@
+{% extends "model-page.html" %}
+
+{% block content %}
+    <h2>Agendamentos</h2>
+<!--Chaves e porcentagem.... consigo usar comandos do python...-->
+    <ul style="font-size: 18px">  <!--criando tópicos-->
+        {% for evento in eventos %}
+            <li>{{ evento.titulo }} - {{ evento.get_data_evento }}</li>
+        {% endfor %}
+    </ul>>
+{% endblock %}
