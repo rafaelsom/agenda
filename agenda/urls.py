@@ -24,6 +24,8 @@ urlpatterns = [
 #criando nova rota para inserção de dados
     path('agenda/evento/', views.evento),
     path('agenda/evento/submit', views.submit_evento),
+#criando uma rota para exclusão de um registro
+    path('agenda/evento/delete/<int:id_evento>/', views.delete_evento),
     #path('', views.index)
     path('', RedirectView.as_view(url='/agenda/')),
     path('login/', views.login_user),
