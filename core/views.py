@@ -3,6 +3,8 @@ from core.models import Evento      #importar core.models -> para listar todos e
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from datetime import datetime, timedelta
+from django.http.response import Http404, JsonResponse
 
 # Create your views here.
 
@@ -34,7 +36,9 @@ def submit_login(request):
 def lista_eventos(request):
 #listar todos eventos cadastrados
     usuario = request.user
-    evento = Evento.objects.filter(usuario=usuario)
+    data_atual = datetime.now() - timedelta(hours=1) #pegando o horário atual
+    evento = Evento.objects.filter(usuario=usuario,
+                                   data_evento__gt=data_atual)  #no django __gt -> maior; __lt -> memor; nesse caso se data_atual maior que data_evento
     dados = {'eventos': evento}
     return render(request, 'agenda.html', dados)
 
@@ -77,7 +81,18 @@ def submit_evento(request):
 @login_required(login_url='/login/')
 def delete_evento(request, id_evento):
     usuario = request.user
-    evento = Evento.objects.get(id=id_evento)
+    try:
+        evento = Evento.objects.get(id=id_evento)
+    except Exception:
+        raise Http404()
     if usuario == evento.usuario:
         evento.delete()
+    else:
+        raise Http404
     return redirect('/')
+
+@login_required(login_url='/login/')
+def json_lista_evento(request):
+    usuario = request.user
+    evento = Evento.objects.filter(usuario=usuario).values('id', 'titulo')
+    return JsonResponse(list(evento), safe=False)
